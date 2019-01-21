@@ -24,25 +24,31 @@ class User:
         self.height = kwargs.get("height", None)
         self.weight = kwargs.get("weight", None)
 
-    def save(self, db):
+    @staticmethod
+    def init_db(db):
         sql_create = """
-         CREATE TABLE IF NOT EXISTS user
-         (user_id        int NOT NULL AUTO_INCREMENT UNIQUE,
-         username    varchar(50) NOT NULL UNIQUE,
-         password    varchar(50) NOT NULL,
-         phone       varchar(50) NOT NULL UNIQUE,
-         mail        varchar(50) NOT NULL UNIQUE,
-         role_id     int NOT NULL,
-         uuid        varchar(50) NOT NULL UNIQUE,
-         address     varchar(150),
-         postal_code varchar(10),
-         birthday    bigint,
-         age         int,
-         gender      varchar(10),
-         height      int,
-         weight      int);
-         """
+                 CREATE TABLE IF NOT EXISTS user
+                 (user_id    int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
+                 username    varchar(50) NOT NULL UNIQUE,
+                 password    varchar(50) NOT NULL,
+                 phone       varchar(50) NOT NULL UNIQUE,
+                 mail        varchar(50) NOT NULL UNIQUE,
+                 role_id     int NOT NULL,
+                 uuid        varchar(50) NOT NULL UNIQUE,
+                 address     varchar(150),
+                 postal_code varchar(10),
+                 birthday    bigint,
+                 age         int,
+                 gender      varchar(10),
+                 height      int,
+                 weight      int);
+                 """
+        cursor = db.cursor()
+        cursor.execute(sql_create)
+        cursor.close()
+        db.commit()
 
+    def save(self, db):
         sql_insert = """
          INSERT INTO user
          (username, password, phone, mail, role_id, uuid, address, postal_code, birthday, age, gender, height, weight)
@@ -50,7 +56,6 @@ class User:
          (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
          """
         uuid = base64.b64encode(bytes(self.role_id + "--" + self.mail, 'utf-8')).decode('utf-8')
-
         val = (self.username,
                self.password,
                self.phone,
@@ -64,9 +69,7 @@ class User:
                self.gender,
                self.height,
                self.weight)
-
         cursor = db.cursor()
-        cursor.execute(sql_create)
         cursor.execute(sql_insert, val)
         cursor.close()
         db.commit()

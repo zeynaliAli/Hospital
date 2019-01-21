@@ -4,7 +4,6 @@ from model import user
 from model.accounting import Accounting
 from model.doctor import Doctor
 from model.lab import Lab
-from model.nurse import Nurse
 from model.patient import Patient
 from model.pharmacy import Pharmacy
 from model.reception import Reception
