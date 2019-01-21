@@ -55,7 +55,7 @@ class User:
          VALUES
          (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
          """
-        uuid = base64.b64encode(bytes(self.role_id + "--" + self.mail, 'utf-8')).decode('utf-8')
+        uuid = base64.b64encode(bytes(str(self.role_id) + "--" + self.mail, 'utf-8')).decode('utf-8')
         val = (self.username,
                self.password,
                self.phone,

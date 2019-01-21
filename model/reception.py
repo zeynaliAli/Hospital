@@ -10,7 +10,7 @@ class Reception(User):
         (timetable_id     int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
         doctor_id         int NOT NULL,
         patient_id        int,
-        date              datetime,
+        visit_date        datetime,
         accepted          boolean,
         emergency         boolean,
         room              varchar(50) UNIQUE,
