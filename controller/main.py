@@ -5,6 +5,7 @@ from model.user import User
 from utils.mail_util import send_mail_to
 
 db = MySQLdb.connect("localhost", "root", "suchadream", charset='utf8', use_unicode=True)
+login_user = None
 
 
 def create_db():
@@ -45,7 +46,20 @@ def register():
 
 
 def login():
-    return
+    global login_user
+    uuid = input("Enter UUID: ")
+    sql = "SELECT * FROM user WHERE uuid = %s"
+    cursor = db.cursor()
+    cursor.execute(sql, (uuid,))
+    row = cursor.fetchone()
+    if row is not None:
+        password = input("Enter your password: ")
+        sql = "SELECT * FROM user WHERE password = %s"
+        cursor.execute(sql, (password,))
+        row = cursor.fetchone()
+        if row is not None:
+            login_user = User.load(uuid, password, db)
+            print("login user mail is " + login_user.mail)
 
 
 def reset_pass():
