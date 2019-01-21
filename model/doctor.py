@@ -5,21 +5,41 @@ class Doctor(User):
 
     @staticmethod
     def init_db(db):
-        sql = """
+        timetable_sql = """
         CREATE TABLE IF NOT EXISTS timetable
         timetable_id      int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
         doctor_id         int NOT NULL,
-        time              datetime,
-        requested_by      int,
+        patient_id        int,
+        date              datetime,
         accepted          boolean,
         emergency         boolean,
+        desc              text,
         FOREIGN KEY (doctor_id) REFERENCES user(user_id),
-        FOREIGN KEY (requested_by) REFERENCES user(user_id)
+        FOREIGN KEY (patient_id) REFERENCES user(user_id)
         """
-        cursor = db.cursor()
-        cursor.execute(sql)
-        cursor.close()
-        db.commit()
+
+        private_message_sql = """
+        CREATE TABLE IF NOT EXISTS pm 
+        timetable_id      int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
+        doctor_id         int NOT NULL,
+        patient_id        int NOT NULL,
+        pm                text NOT NULL,
+        FOREIGN KEY (doctor_id) REFERENCES user(user_id),
+        FOREIGN KEY (patient_id) REFERENCES user(user_id)
+        """
+
+        prescription = """
+        CREATE TABLE IF NOT EXISTS diagnostic_report
+        prescription_id   int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
+        doctor_id         int NOT NULL,
+        patient_id        int NOT NULL,
+        timetable_id      int,
+        desc              int,
+        FOREIGN KEY (doctor_id) REFERENCES user(user_id),
+        FOREIGN KEY (patient_id) REFERENCES user(user_id),
+        FOREIGN KEY (timetable_id) REFERENCES timetable(timetable_id)
+        """
+
 
     def cancel_appointment(self):
         return
