@@ -111,3 +111,24 @@ class User:
             cursor.execute(sql, (kwargs.get(key), user_id))
         cursor.close()
         db.commit()
+
+    def edit_profile(self, db):
+        address = input("Enter you address. [Enter to skip or keep current]")
+        postal_code = input("Enter you postal code. [Enter to skip or keep current]")
+        birthday = input("Enter you birthday. [Enter to skip or keep current]")
+        age = input("Enter you age. [Enter to skip or keep current]")
+        gender = input("Enter you gender. [Enter to skip or keep current]")
+        height = input("Enter you height. [Enter to skip or keep current]")
+        weight = input("Enter you weight. [Enter to skip or keep current]")
+        User.update(db,
+                    self.id,
+                    address=address,
+                    postal_code=postal_code,
+                    birthday=birthday,
+                    age=age,
+                    gender=gender,
+                    height=height,
+                    weight=weight)
+
+    def show_menu(self, db):
+        print("0 - edit profile")

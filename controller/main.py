@@ -1,6 +1,7 @@
 import MySQLdb
 
 from model import user
+from model.doctor import Doctor
 from model.user import User
 from utils.mail_util import send_mail_to
 
@@ -62,6 +63,10 @@ def login():
             print("login user mail is " + login_user.mail)
 
 
+def change_to_role(role_id, user):
+    if role_id == 1:
+        user.__class__ = Doctor
+
 def reset_pass():
     mail = input("enter your email\n")
     print(mail)
@@ -99,6 +104,7 @@ def main():
         register()
     elif choice == 2:
         reset_pass()
+    # elif choice == 3:
     print(choice)
 
 
