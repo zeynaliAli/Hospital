@@ -36,12 +36,11 @@ def register():
     role_id = input("""
     Enter your role :
     1 - Doctor
-    2 - Nurse
-    3 - Lab
-    4 - Pharmacy
-    5 - Patient
-    6 - Accounting
-    7 - Reception
+    2 - Lab
+    3 - Pharmacy
+    4 - Patient
+    5 - Accounting
+    6 - Reception
     """)
     u = User(username, password, phone, mail, role_id)
     uuid = u.save(db)
@@ -76,16 +75,14 @@ def change_to_role(user):
     if role_id == 1:
         user.__class__ = Doctor
     elif role_id == 2:
-        user.__class__ = Nurse
-    elif role_id == 3:
         user.__class__ = Lab
-    elif role_id == 4:
+    elif role_id == 3:
         user.__class__ = Pharmacy
-    elif role_id == 5:
+    elif role_id == 4:
         user.__class__ = Patient
-    elif role_id == 6:
+    elif role_id == 5:
         user.__class__ = Accounting
-    elif role_id == 7:
+    elif role_id == 6:
         user.__class__ = Reception
 
     return user
