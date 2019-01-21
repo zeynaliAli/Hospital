@@ -1,4 +1,5 @@
 from model.user import User
+from utils.mail_util import send_mail_to
 
 
 class Doctor(User):
@@ -33,7 +34,94 @@ class Doctor(User):
         cursor.close()
         db.commit()
 
-    def cancel_appointment(self):
+    def cancel_appointment(self, db):
+        sql = """
+        SELECT * FROM timetable
+        WHERE doctor_id = %s
+        """
+
+        cursor = db.cursor()
+        cursor.execute(sql, (self.id,))
+        rows = cursor.fetchall()
+        for row in rows:
+            time = row[3]
+            accept = "---" if row[4] is None else row[4]
+            sql = """
+            SELECT user_id, username, mail 
+            FROM user 
+            INNER JOIN timetable ON user.user_id = timetable.patient_id
+            WHERE timetable.visit_date = %s AND timetable.accepted = true
+            """
+            cursor.execute(sql, (time,))
+            patient = cursor.fetchone()
+            print("""
+            Time: {}
+            Patient: id = {}, username = {}, email = {}
+            Accept Status: {}
+            _________________________________________
+            """.format(time, patient[0], patient[1], patient[2], accept == 1))
+        if len(rows) > 0:
+            cancel_id = int(input("Enter id of patient you want to cancel the appointment of : \n"))
+            sql = """
+            UPDATE timetable SET accepted = false
+            WHERE patient_id = %s
+            """
+            cursor.execute(sql, (cancel_id,))
+            for row in rows:
+                if row[0] == cancel_id:
+                    mail = row[2]
+                    send_mail_to(mail, """
+                    Your appointment has been Canceled!
+                    """)
+
+        cursor.close()
+        db.commit()
+        self.show_menu(db)
+        return
+
+    def accept_appointment(self, db):
+        sql = """
+                SELECT * FROM timetable
+                WHERE doctor_id = %s
+                """
+
+        cursor = db.cursor()
+        cursor.execute(sql, (self.id,))
+        rows = cursor.fetchall()
+        for row in rows:
+            time = row[3]
+            accept = "---" if row[4] is None else row[4]
+            sql = """
+                    SELECT user_id, username, mail 
+                    FROM user 
+                    INNER JOIN timetable ON user.user_id = timetable.patient_id
+                    WHERE timetable.visit_date = %s AND (timetable.accepted = false OR timetable.accepted is NULL)
+                    """
+            cursor.execute(sql, (time,))
+            patient = cursor.fetchone()
+
+            if patient is None:
+                print("There is no patient to Accept.")
+                self.show_menu(db)
+                return
+
+            print("""
+                    Time: {}
+                    Patient: id = {}, username = {}, email = {}
+                    Accept Status: {}
+                    _____________________________________________
+                    """.format(time, patient[0], patient[1], patient[2], accept))
+        if len(rows) > 0:
+            accept_id = int(input("Enter id of patient you want to accept the appointment of : \n"))
+            sql = """
+                    UPDATE timetable SET accepted = true
+                    WHERE patient_id = %s
+                    """
+            cursor.execute(sql, (accept_id,))
+            print("Appointment Accepted Successfully!")
+        cursor.close()
+        db.commit()
+        self.show_menu(db)
         return
 
     def send_pm(self):
@@ -59,11 +147,17 @@ class Doctor(User):
             """
             cursor.execute(sql, (time,))
             patient = cursor.fetchone()
-            patient = patient if patient is not None else "---"
-            print("Time: {}\t Patient: {}\t Accept Status: {}\t".format(time, patient, accept))
+
+            print("""
+            Time: {}
+            Patient: {}
+            Accept Status: {}
+            ________________________________________
+            """.format(time, patient, accept == 1))
 
         cursor.close()
         db.commit()
+        self.show_menu(db)
         return
 
     def add_visit_time(self, db):
@@ -87,7 +181,8 @@ class Doctor(User):
         print("1 - show schedule")
         print("2 - send PM to a patient")
         print("3 - cancel an appointment")
-        print("4 - Add free time to visit")
+        print("4 - accept an appointment")
+        print("5 - Add free time to visit")
         choice = int(input())
         if choice == 1:
             self.show_schedule(db)
@@ -96,4 +191,6 @@ class Doctor(User):
         elif choice == 3:
             self.cancel_appointment(db)
         elif choice == 4:
+            self.accept_appointment(db)
+        elif choice == 5:
             self.add_visit_time(db)
