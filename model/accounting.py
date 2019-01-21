@@ -8,10 +8,11 @@ class Accounting(User):
         sql = """
         CREATE TABLE IF NOT EXISTS factor (
         factor_id             int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
-        timetable_id          int NOT NULL,
-        visit_price           int,
+        patient_id            int NOT NULL,
+        price                 int,
         payed                 int,
-        FOREIGN KEY (timetable_id) REFERENCES timetable(timetable_id)
+        description           text,
+        FOREIGN KEY (patient_id) REFERENCES user(user_id)
         )
         """
         cursor = db.cursor()
