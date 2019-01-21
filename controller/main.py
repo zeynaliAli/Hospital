@@ -1,7 +1,13 @@
 import MySQLdb
 
 from model import user
+from model.accounting import Accounting
 from model.doctor import Doctor
+from model.lab import Lab
+from model.nurse import Nurse
+from model.patient import Patient
+from model.pharmacy import Pharmacy
+from model.reception import Reception
 from model.user import User
 from utils.mail_util import send_mail_to
 
@@ -60,18 +66,33 @@ def login():
         row = cursor.fetchone()
         if row is not None:
             login_user = User.load(uuid, password, db)
+            login_user = change_to_role(login_user)
             print("login user mail is " + login_user.mail)
+            login_user.show_menu(db)
 
 
-def change_to_role(role_id, user):
+def change_to_role(user):
+    role_id = user.role_id
     if role_id == 1:
         user.__class__ = Doctor
     elif role_id == 2:
         user.__class__ = Nurse
+    elif role_id == 3:
+        user.__class__ = Lab
+    elif role_id == 4:
+        user.__class__ = Pharmacy
+    elif role_id == 5:
+        user.__class__ = Patient
+    elif role_id == 6:
+        user.__class__ = Accounting
+    elif role_id == 7:
+        user.__class__ = Reception
+
+    return user
+
 
 def reset_pass():
     mail = input("enter your email\n")
-    print(mail)
     sql = """
     SELECT * FROM user
     WHERE mail = %s
@@ -79,7 +100,6 @@ def reset_pass():
     cursor = db.cursor()
     cursor.execute(sql, (mail,))
     row = cursor.fetchone()
-    print(row)
     cursor.close()
     if row is not None:
         send_mail_to(mail, """
@@ -107,7 +127,6 @@ def main():
     elif choice == 2:
         reset_pass()
     # elif choice == 3:
-    print(choice)
 
 
 main()

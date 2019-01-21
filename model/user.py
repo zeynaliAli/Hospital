@@ -97,8 +97,6 @@ class User:
                     height=record[12],
                     weight=record[13],
                     id=record[0])
-        print(record)
-        print(user.height)
         return user
 
     @staticmethod
@@ -106,8 +104,6 @@ class User:
         cursor = db.cursor()
         for key in kwargs.keys():
             sql = "UPDATE user SET " + key + "= %s WHERE user_id = %s"
-            print(key)
-            print(kwargs.get(key))
             cursor.execute(sql, (kwargs.get(key), user_id))
         cursor.close()
         db.commit()
