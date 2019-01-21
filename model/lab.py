@@ -12,7 +12,7 @@ class Lab(User):
         lab_id           int NOT NULL,
         doctor_id        int NOT NULL,
         patient_id       int NOT NULL,
-        desc             int,
+        desc             text,
         price            int,
         FOREIGN KEY (lab_id)        REFERENCES lab(lab_id),
         FOREIGN KEY (doctor_id)     REFERENCES user(user_id),

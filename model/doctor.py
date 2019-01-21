@@ -33,7 +33,7 @@ class Doctor(User):
         prescription_id   int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
         doctor_id         int NOT NULL,
         patient_id        int NOT NULL,
-        desc              int,
+        desc              text,
         FOREIGN KEY (doctor_id) REFERENCES user(user_id),
         FOREIGN KEY (patient_id) REFERENCES user(user_id),
         """
