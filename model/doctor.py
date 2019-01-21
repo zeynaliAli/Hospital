@@ -28,18 +28,22 @@ class Doctor(User):
         FOREIGN KEY (patient_id) REFERENCES user(user_id)
         """
 
-        prescription = """
+        prescription_sql = """
         CREATE TABLE IF NOT EXISTS diagnostic_report
         prescription_id   int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
         doctor_id         int NOT NULL,
         patient_id        int NOT NULL,
-        timetable_id      int,
         desc              int,
         FOREIGN KEY (doctor_id) REFERENCES user(user_id),
         FOREIGN KEY (patient_id) REFERENCES user(user_id),
-        FOREIGN KEY (timetable_id) REFERENCES timetable(timetable_id)
         """
 
+        cursor = db.cursor()
+        cursor.execute(timetable_sql)
+        cursor.execute(private_message_sql)
+        cursor.execute(prescription_sql)
+        cursor.close()
+        db.commit()
 
     def cancel_appointment(self):
         return
