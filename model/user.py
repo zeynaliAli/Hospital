@@ -1,7 +1,5 @@
 import base64
 
-import MySQLdb
-
 
 class User:
 
@@ -10,12 +8,14 @@ class User:
                  password,
                  phone,
                  mail,
+                 role_id,
                  **kwargs):
         self.id = kwargs.get("id")
         self.username = username
         self.password = password
         self.phone = phone
         self.mail = mail
+        self.role_id = role_id
         self.address = kwargs.get("address", None)
         self.postal_code = kwargs.get("postal_code", None)
         self.birthday = kwargs.get("birthday", None)
@@ -24,15 +24,15 @@ class User:
         self.height = kwargs.get("height", None)
         self.weight = kwargs.get("weight", None)
 
-    def save(self, db, role):
+    def save(self, db):
         sql_create = """
          CREATE TABLE IF NOT EXISTS user
-         (pid        int NOT NULL AUTO_INCREMENT UNIQUE,
+         (user_id        int NOT NULL AUTO_INCREMENT UNIQUE,
          username    varchar(50) NOT NULL UNIQUE,
          password    varchar(50) NOT NULL,
          phone       varchar(50) NOT NULL UNIQUE,
          mail        varchar(50) NOT NULL UNIQUE,
-         role        varchar(50) NOT NULL,
+         role_id     int NOT NULL,
          uuid        varchar(50) NOT NULL UNIQUE,
          address     varchar(150),
          postal_code varchar(10),
@@ -45,17 +45,17 @@ class User:
 
         sql_insert = """
          INSERT INTO user
-         (username, password, phone, mail, role, uuid, address, postal_code, birthday, age, gender, height, weight)
+         (username, password, phone, mail, role_id, uuid, address, postal_code, birthday, age, gender, height, weight)
          VALUES
          (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
          """
-        uuid = base64.b64encode(bytes(role + "--" + self.mail, 'utf-8')).decode('utf-8')
+        uuid = base64.b64encode(bytes(self.role_id + "--" + self.mail, 'utf-8')).decode('utf-8')
 
         val = (self.username,
                self.password,
                self.phone,
                self.mail,
-               role,
+               self.role_id,
                uuid,
                self.address,
                self.postal_code,
@@ -70,12 +70,10 @@ class User:
         cursor.execute(sql_insert, val)
         cursor.close()
         db.commit()
-
         return uuid
 
     @staticmethod
     def load(uuid, password, db):
-
         sql = """
         SELECT * FROM user
         WHERE uuid = %s AND password = %s
@@ -90,13 +88,14 @@ class User:
                     record[2],
                     record[3],
                     record[4],
-                    address=record[5],
-                    postal_code=record[6],
-                    birthday=record[7],
-                    age=record[8],
-                    gender=record[9],
-                    height=record[10],
-                    weight=record[11],
+                    record[5],
+                    address=record[7],
+                    postal_code=record[8],
+                    birthday=record[9],
+                    age=record[10],
+                    gender=record[11],
+                    height=record[12],
+                    weight=record[13],
                     id=record[0])
         print(record)
         print(user.height)
@@ -106,7 +105,7 @@ class User:
     def update(db, user_id, **kwargs):
         cursor = db.cursor()
         for key in kwargs.keys():
-            sql = "UPDATE user SET " + key + "= %s WHERE pid = %s"
+            sql = "UPDATE user SET " + key + "= %s WHERE user_id = %s"
             print(key)
             print(kwargs.get(key))
             cursor.execute(sql, (kwargs.get(key), user_id))
