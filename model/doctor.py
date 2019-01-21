@@ -10,7 +10,6 @@ class Doctor(User):
         private_message_sql = """
         CREATE TABLE IF NOT EXISTS pm 
         (pm_id             int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
-        timetable_id       int NOT NULL,
         doctor_id          int NOT NULL,
         patient_id         int NOT NULL,
         pm                 text NOT NULL,
@@ -124,7 +123,38 @@ class Doctor(User):
         self.show_menu(db)
         return
 
-    def send_pm(self):
+    def send_pm(self, db):
+        sql = """
+                SELECT user_id, username, mail 
+                FROM user 
+                INNER JOIN timetable ON user.user_id = timetable.patient_id
+                WHERE timetable.doctor_id = %s
+                """
+        cursor = db.cursor()
+        cursor.execute(sql, (self.id,))
+        rows = cursor.fetchall()
+
+        for row in rows:
+            print("""
+                    Patient: id = {}, username = {}, email = {}
+                    _________________________________________
+                    """.format(row[0], row[1], row[2]))
+
+        if len(rows) < 1:
+            print("You don't have any patient loser!")
+            return
+
+        patient_id = int(input("Enter id of patient you want ot send him/her a pm : \n"))
+        msg = input("Type your message : \n")
+
+        sql_save_pm = """
+        INSERT INTO pm
+        (doctor_id, patient_id, pm)
+        VALUES
+        (%s, %s, %s)
+        """
+        cursor.execute(sql_save_pm, (self.id, patient_id, msg))
+        print("PM send successfully!")
         return
 
     def show_schedule(self, db):
