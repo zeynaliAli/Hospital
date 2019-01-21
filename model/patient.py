@@ -6,7 +6,7 @@ class Patient(User):
     @staticmethod
     def init_db(db):
         sql = """
-        CREATE TABLE patient
+        CREATE TABLE IF NOT EXISTS patient
         patient_id      int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
         user_id         int NOT NULL,
         room            varchar(50) UNIQUE,

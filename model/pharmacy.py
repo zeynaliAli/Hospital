@@ -16,7 +16,7 @@ class Pharmacy(User):
         """
 
         prescription_drug_sql = """
-        CREATE TABLE IF NOT EXIST  prescription_drug
+        CREATE TABLE IF NOT EXISTS  prescription_drug
         p_d_id           int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
         prescription_id  int NOT NULL,
         drug_id          int NOT NULL
