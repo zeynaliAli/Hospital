@@ -66,6 +66,8 @@ def login():
 def change_to_role(role_id, user):
     if role_id == 1:
         user.__class__ = Doctor
+    elif role_id == 2:
+        user.__class__ = Nurse
 
 def reset_pass():
     mail = input("enter your email\n")
