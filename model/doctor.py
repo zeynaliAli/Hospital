@@ -1,3 +1,5 @@
+from smtplib import SMTPRecipientsRefused
+
 from model.user import User
 from utils.mail_util import send_mail_to
 
@@ -35,91 +37,84 @@ class Doctor(User):
 
     def cancel_appointment(self, db):
         sql = """
-        SELECT * FROM timetable
-        WHERE doctor_id = %s
-        """
+               SELECT u.user_id, u.username, u.mail, t.visit_date
+               FROM user u
+               INNER JOIN timetable t ON u.user_id = t.patient_id
+               WHERE t.doctor_id = %s AND t.accepted = true
+               """
 
         cursor = db.cursor()
         cursor.execute(sql, (self.id,))
         rows = cursor.fetchall()
         for row in rows:
             time = row[3]
-            accept = "---" if row[4] is None else row[4]
-            sql = """
-            SELECT user_id, username, mail 
-            FROM user 
-            INNER JOIN timetable ON user.user_id = timetable.patient_id
-            WHERE timetable.visit_date = %s AND timetable.accepted = true
-            """
-            cursor.execute(sql, (time,))
-            patient = cursor.fetchone()
             print("""
             Time: {}
             Patient: id = {}, username = {}, email = {}
             Accept Status: {}
             _________________________________________
-            """.format(time, patient[0], patient[1], patient[2], accept == 1))
-        if len(rows) > 0:
-            cancel_id = int(input("Enter id of patient you want to cancel the appointment of : \n"))
-            sql = """
-            UPDATE timetable SET accepted = false
-            WHERE patient_id = %s
-            """
-            cursor.execute(sql, (cancel_id,))
-            for row in rows:
-                if row[0] == cancel_id:
-                    mail = row[2]
-                    send_mail_to(mail, """
-                    Your appointment has been Canceled!
-                    """)
+            """.format(time, row[0], row[1], row[2], row == 1))
 
+        if len(rows) < 1:
+            print("There is no any accepted appointment !")
+            self.show_menu(db)
+            return
+
+        cancel_id = int(input("Enter id of patient you want to cancel the appointment of : \n"))
+        sql = """
+        UPDATE timetable SET accepted = false
+        WHERE patient_id = %s
+        """
+        cursor.execute(sql, (cancel_id,))
         cursor.close()
         db.commit()
+        for row in rows:
+                if row[0] == cancel_id:
+                    mail = row[2]
+                    try:
+                        send_mail_to(mail, """
+                        Your appointment has been Canceled!
+                        """)
+                    except SMTPRecipientsRefused:
+                        print("Error in sending mail, Address is not valid ")
+
         self.show_menu(db)
         return
 
     def accept_appointment(self, db):
         sql = """
-                SELECT * FROM timetable
-                WHERE doctor_id = %s
-                """
+               SELECT u.user_id, u.username, u.mail, t.visit_date
+               FROM user u
+               INNER JOIN timetable t ON u.user_id = t.patient_id
+               WHERE t.doctor_id = %s AND (t.accepted = false OR t.accepted is NULL)
+               """
 
         cursor = db.cursor()
         cursor.execute(sql, (self.id,))
         rows = cursor.fetchall()
         for row in rows:
             time = row[3]
-            accept = "---" if row[4] is None else row[4]
-            sql = """
-                    SELECT user_id, username, mail 
-                    FROM user 
-                    INNER JOIN timetable ON user.user_id = timetable.patient_id
-                    WHERE timetable.visit_date = %s AND (timetable.accepted = false OR timetable.accepted is NULL)
-                    """
-            cursor.execute(sql, (time,))
-            patient = cursor.fetchone()
-
-            if patient is None:
-                print("There is no patient to Accept.")
-                self.show_menu(db)
-                return
-
             print("""
-                    Time: {}
-                    Patient: id = {}, username = {}, email = {}
-                    Accept Status: {}
-                    _____________________________________________
-                    """.format(time, patient[0], patient[1], patient[2], accept))
-        if len(rows) > 0:
-            accept_id = int(input("Enter id of patient you want to accept the appointment of : \n"))
-            sql = """
-                    UPDATE timetable SET accepted = true
-                    WHERE patient_id = %s
-                    """
-            cursor.execute(sql, (accept_id,))
-            print("Appointment Accepted Successfully!")
+            Time: {}
+            Patient: id = {}, username = {}, email = {}
+            Accept Status: {}
+            _________________________________________
+            """.format(time, row[0], row[1], row[2], row == 1))
+
+        if len(rows) < 1:
+            print("There is no any unaccepted appointment !")
+            self.show_menu(db)
+            return
+
+        accept_id = int(input("Enter id of patient you want to accept the appointment of : \n"))
+        sql = """
+        UPDATE timetable SET accepted = true
+        WHERE patient_id = %s
+        """
+        cursor.execute(sql, (accept_id,))
         cursor.close()
         db.commit()
+        print("Done !")
         self.show_menu(db)
         return
 
