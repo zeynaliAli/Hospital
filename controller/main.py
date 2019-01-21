@@ -14,7 +14,7 @@ db = MySQLdb.connect("localhost", "root", "suchadream", charset='utf8', use_unic
 login_user = None
 
 
-def create_db():
+def init_db():
     sql = "CREATE DATABASE IF NOT EXISTS hospital DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;"
     sql_use = "USE hospital;"
     cursor = db.cursor()
@@ -23,11 +23,16 @@ def create_db():
     cursor.close()
     db.commit()
 
+    User.init_db(db)
+    Doctor.init_db(db)
+    Lab.init_db(db)
+    Pharmacy.init_db(db)
+    Patient.init_db(db)
+    Reception.init_db(db)
+    Accounting.init_db(db)
+
 
 def register():
-    # u = User("alizeyn1", "suchadream1", "092118457971", "ali.zzeynali@gmail.org")
-    # uuid = u.save(db, "Doctor")
-
     username = input("Enter your username :")
     password = input("Enter your password :")
     phone = input("Enter your phone number :")
@@ -106,10 +111,7 @@ def reset_pass():
 
 
 def main():
-    create_db()
-    # register(db, "Doctora")
-    # User.load("RG9jdG9yYS0tYWxpLnp6ZXluYWxpQGdtYWlsLm9yZw==", "suchadream1", db)
-    # User.update(db, 3, address="fallahi", age=22)
+    init_db()
     print("""
     0 - Login
     1 - Register

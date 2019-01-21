@@ -8,18 +8,18 @@ class Pharmacy(User):
 
         drug_sql = """
         CREATE TABLE IF NOT EXISTS drug
-        drug_id          int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
+        (drug_id         int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
         name             varchar(150),
-        desc             text,
+        description      text,
         price            int,
-        expire_date      datetime
+        expire_date      datetime)
         """
 
         prescription_drug_sql = """
         CREATE TABLE IF NOT EXISTS  prescription_drug
-        p_d_id           int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
+        (p_d_id           int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
         prescription_id  int NOT NULL,
-        drug_id          int NOT NULL
+        drug_id          int NOT NULL)
         """
 
         cursor = db.cursor()

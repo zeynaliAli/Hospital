@@ -5,41 +5,29 @@ class Doctor(User):
 
     @staticmethod
     def init_db(db):
-        timetable_sql = """
-        CREATE TABLE IF NOT EXISTS timetable
-        timetable_id      int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
-        doctor_id         int NOT NULL,
-        patient_id        int,
-        date              datetime,
-        accepted          boolean,
-        emergency         boolean,
-        desc              text,
-        FOREIGN KEY (doctor_id) REFERENCES user(user_id),
-        FOREIGN KEY (patient_id) REFERENCES user(user_id)
-        """
 
         private_message_sql = """
         CREATE TABLE IF NOT EXISTS pm 
-        timetable_id      int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
-        doctor_id         int NOT NULL,
-        patient_id        int NOT NULL,
-        pm                text NOT NULL,
-        FOREIGN KEY (doctor_id) REFERENCES user(user_id),
-        FOREIGN KEY (patient_id) REFERENCES user(user_id)
+        (pm_id             int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
+        timetable_id       int NOT NULL,
+        doctor_id          int NOT NULL,
+        patient_id         int NOT NULL,
+        pm                 text NOT NULL,
+        FOREIGN KEY (doctor_id)  REFERENCES user(user_id),
+        FOREIGN KEY (patient_id) REFERENCES user(user_id))
         """
 
         prescription_sql = """
-        CREATE TABLE IF NOT EXISTS diagnostic_report
-        prescription_id   int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
-        doctor_id         int NOT NULL,
-        patient_id        int NOT NULL,
-        desc              text,
-        FOREIGN KEY (doctor_id) REFERENCES user(user_id),
-        FOREIGN KEY (patient_id) REFERENCES user(user_id),
+        CREATE TABLE IF NOT EXISTS prescription
+        (prescription_id   int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
+        doctor_id          int NOT NULL,
+        patient_id         int NOT NULL,
+        description        text,
+        FOREIGN KEY (doctor_id)  REFERENCES user(user_id),
+        FOREIGN KEY (patient_id) REFERENCES user(user_id))
         """
 
         cursor = db.cursor()
-        cursor.execute(timetable_sql)
         cursor.execute(private_message_sql)
         cursor.execute(prescription_sql)
         cursor.close()
