@@ -80,3 +80,45 @@ db.commit()
 # cursor.execute(sql)
 # cursor.close()
 # db.commit()
+# def show_visit_requests(db):
+#     sql = """
+#      SELECT
+#          r.timetable_id,
+#          t.visit_date,
+#          d.username,
+#          d.mail,
+#          p.username,
+#          p.mail
+#      FROM reception r
+#      INNER JOIN timetable t
+#      ON r.timetable_id = t.timetable_id
+#      INNER JOIN user d
+#      ON d.user_id = t.doctor_id
+#      INNER JOIN user p
+#      ON p.user_id = r.patient_id
+#      """
+#     cursor = db.cursor()
+#     cursor.execute(sql)
+#     rows = cursor.fetchall()
+#     cursor.close()
+#     db.commit()
+#     for row in rows:
+#         print("""
+#          ID = {}
+#
+#          Time = {}
+#
+#          For Doctor :
+#              Doctor username = {}
+#              Doctor email = {}
+#
+#          Requested by patient :
+#              Patient username = {}
+#              Patient email = {}
+#
+#          ______________________________
+#
+#          """.format(row[0], row[1], row[2], row[3], row[4], row[5]))
+#
+#
+# show_visit_requests(db)
