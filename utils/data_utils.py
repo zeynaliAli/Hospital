@@ -3,6 +3,7 @@ from random import randint
 import MySQLdb
 from faker import Faker
 
+from model.drug import Drug
 from model.user import User
 
 db = MySQLdb.connect("localhost", "root", "suchadream", charset='utf8', use_unicode=True)
@@ -122,3 +123,12 @@ db.commit()
 #
 #
 # show_visit_requests(db)
+
+
+# Drug("a", "asdlfkj asdlkfj asdf", 353500, '2010-06-13 13:55').save(db)
+# Drug("b", "asdlfkj ag sdlkfj asdf", 3421500, '2010-07-13 13:55').save(db)
+# Drug("c", "asdlfkj asd sd lkfj asdf", 35300, '2010-08-13 13:55').save(db)
+# Drug("d", "aa asdlfkj asdlkfj asdf", 34500, '2010-09-13 13:55').save(db)
+# Drug("e", "a fdfd sdlfkj asdlkfj asdf", 3500, '2010-01-13 13:55').save(db)
+# Drug("f", "asdl fdfdf kj asdlkfj asdf", 3500, '2010-06-12 13:55').save(db)
+# Drug("g", "aadf sdlfkj asdlkfj asdf", 35900, '2010-06-11 13:55').save(db)

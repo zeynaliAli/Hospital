@@ -53,7 +53,7 @@ class Doctor(User):
             Patient: id = {}, username = {}, email = {}
             Accept Status: {}
             _________________________________________
-            """.format(time, row[0], row[1], row[2], row == 1))
+            """.format(time, row[0], row[1], row[2], True))
 
         if len(rows) < 1:
             print("There is no any accepted appointment !")
@@ -83,7 +83,7 @@ class Doctor(User):
 
     def accept_appointment(self, db):
         sql = """
-               SELECT u.user_id, u.username, u.mail, t.visit_date
+               SELECT u.user_id, u.username, u.mail, t.visit_date, t.accepted
                FROM user u
                INNER JOIN timetable t ON u.user_id = t.patient_id
                WHERE t.doctor_id = %s AND (t.accepted = false OR t.accepted is NULL)
@@ -99,7 +99,11 @@ class Doctor(User):
             Patient: id = {}, username = {}, email = {}
             Accept Status: {}
             _________________________________________
-            """.format(time, row[0], row[1], row[2], row == 1))
+            """.format(time,
+                       row[0],
+                       row[1],
+                       row[2],
+                       "---" if row[4] is None else False))
 
         if len(rows) < 1:
             print("There is no any unaccepted appointment !")
@@ -201,6 +205,71 @@ class Doctor(User):
         self.show_menu(db)
         return
 
+    def give_prescription(self, db):
+        print("Your Patients (remember id to give prescription) :")
+        sql = """
+               SELECT u.user_id, u.username, u.mail, t.visit_date
+               FROM user u
+               INNER JOIN timetable t ON u.user_id = t.patient_id
+               WHERE t.doctor_id = %s AND t.accepted = true
+               """
+
+        cursor = db.cursor()
+        cursor.execute(sql, (self.id,))
+        rows = cursor.fetchall()
+        for row in rows:
+            time = row[3]
+            print("""
+            Time: {}
+            Patient: id = {}, username = {}, email = {}
+            Accept Status: {}
+            _________________________________________
+            """.format(time, row[0], row[1], row[2], True))
+
+        if len(rows) < 1:
+            print("You have no patient loser crap!")
+            self.show_menu(db)
+            return
+
+        patient_id = int(input("Enter Patient id you want to give prescription: \n"))
+        description = input("Enter description about prescription: \n")
+
+        prescription_sql = """
+        INSERT INTO prescription
+        (doctor_id, patient_id, description)
+        VALUES
+        (%s, %s, %s)
+        """
+        cursor.execute(prescription_sql, (self.id, patient_id, description))
+        prescription_id = cursor.lastrowid
+
+        drugs_sql = """
+        SELECT drug_id, name
+        FROM drug
+        """
+        cursor.execute(drugs_sql)
+        rows = cursor.fetchall()
+        for row in rows:
+            print("""
+            Drug ID : {}
+            Drug Name : {}
+            ___________________
+            
+            """.format(row[0], row[1]))
+
+        drugs = input("Enter ID of drugs you want to prescript to patient (example : 1-2-3-4-5) : \n")
+        drugs = drugs.split("-")
+        prescription_drug_sql = """
+        INSERT INTO prescription_drug
+        (prescription_id, drug_id)
+        VALUES
+        (%s, %s)
+        """
+        for drug in drugs:
+            cursor.execute(prescription_drug_sql, (prescription_id, drug,))
+        cursor.close()
+        db.commit()
+
     def show_menu(self, db):
         super().show_menu(db)
         print("1 - Show schedule")
@@ -208,6 +277,7 @@ class Doctor(User):
         print("3 - Cancel an appointment")
         print("4 - Accept an appointment")
         print("5 - Add free time to visit")
+        print("6 - Give prescription")
         choice = int(input())
         if choice == 1:
             self.show_schedule(db)
@@ -219,3 +289,5 @@ class Doctor(User):
             self.accept_appointment(db)
         elif choice == 5:
             self.add_visit_time(db)
+        elif choice == 6:
+            self.give_prescription(db)
