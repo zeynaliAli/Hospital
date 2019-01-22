@@ -203,10 +203,10 @@ class Doctor(User):
 
     def show_menu(self, db):
         super().show_menu(db)
-        print("1 - show schedule")
-        print("2 - send PM to a patient")
-        print("3 - cancel an appointment")
-        print("4 - accept an appointment")
+        print("1 - Show schedule")
+        print("2 - Send PM to a patient")
+        print("3 - Cancel an appointment")
+        print("4 - Accept an appointment")
         print("5 - Add free time to visit")
         choice = int(input())
         if choice == 1:
