@@ -9,7 +9,7 @@ class Lab(User):
 
         diagnosis_sql = """
         CREATE TABLE IF NOT EXISTS diagnosis
-        (prescription_id   int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
+        (diagnosis_id   int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
         doctor_id          int NOT NULL,
         patient_id         int NOT NULL,
         description        text,

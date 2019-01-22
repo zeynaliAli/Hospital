@@ -49,6 +49,62 @@ class Patient(User):
         db.commit()
         self.show_menu(db)
 
+    def show_prescription(self, db):
+        sql = """
+        SELECT prescription_id, description
+        FROM prescription
+        WHERE patient_id= %s
+        """
+
+        drugs_sql = """
+        SELECT d.name
+        FROM prescription_drug p
+        INNER JOIN drug d
+        ON d.drug_id = p.drug_id
+        WHERE prescription_id = %s
+        """
+
+        cursor = db.cursor()
+        cursor.execute(sql, (self.id,))
+        rows = cursor.fetchall()
+        for row in rows:
+            cursor.execute(drugs_sql, (row[0],))
+            drugs = cursor.fetchall()
+            print("""
+            Prescription id = {}
+            Description = {}
+            
+            Drugs : {}
+            """.format(row[0], row[1], drugs))
+
+    def show_tests(self, db):
+        sql = """
+        SELECT diagnosis_id, description
+        FROM diagnosis
+        WHERE patient_id= %s
+        """
+
+        tests_sql = """
+        SELECT d.name
+        FROM diagnosis_test p
+        INNER JOIN test d
+        ON d.test_id = p.test_id
+        WHERE diagnosis_id = %s
+        """
+
+        cursor = db.cursor()
+        cursor.execute(sql, (self.id,))
+        rows = cursor.fetchall()
+        for row in rows:
+            cursor.execute(tests_sql, (row[0],))
+            tests = cursor.fetchall()
+            print("""
+            Diagnosis id = {}
+            Description = {}
+
+            Tests : {}
+            """.format(row[0], row[1], tests))
+
     def show_menu(self, db):
         print("1 - To see the timetable :")
         print("2 - Request a visit date (choose id of visit date from timetable) : ")
@@ -59,4 +115,8 @@ class Patient(User):
             self.show_free_visit_times(db)
         elif choice == 2:
             self.request_visit_date(db)
+        elif choice == 3:
+            self.show_prescription(db)
+        elif choice == 4:
+            self.show_tests(db)
 
