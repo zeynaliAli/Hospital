@@ -4,6 +4,7 @@ import MySQLdb
 from faker import Faker
 
 from model.drug import Drug
+from model.test import Test
 from model.user import User
 
 db = MySQLdb.connect("localhost", "root", "suchadream", charset='utf8', use_unicode=True)
@@ -17,15 +18,14 @@ db.commit()
 
 # fake = Faker()
 #
-# u1 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() +  "@fum-
-# ..............................................................00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000`db.com",  randint(1, 6))
-# u2 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() +  "@fum-db.com",  randint(1, 6))
-# u3 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() +  "@fum-db.com",  randint(1, 6))
-# u4 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() +  "@fum-db.com",  randint(1, 6))
-# u5 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() +  "@fum-db.com",  randint(1, 6))
-# u6 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() +  "@fum-db.com",  randint(1, 6))
-# u7 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() +  "@fum-db.com",  randint(1, 6))
-# u9 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() +  "@fum-db.com",  randint(1, 6))
+# u1 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() + "@fum-db.com",  randint(1, 6))
+# u2 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() + "@fum-db.com",  randint(1, 6))
+# u3 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() + "@fum-db.com",  randint(1, 6))
+# u4 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() + "@fum-db.com",  randint(1, 6))
+# u5 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() + "@fum-db.com",  randint(1, 6))
+# u6 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() + "@fum-db.com",  randint(1, 6))
+# u7 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() + "@fum-db.com",  randint(1, 6))
+# u9 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() + "@fum-db.com",  randint(1, 6))
 # u10 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() + "@fum-db.com", randint(1, 6))
 # u11 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() + "@fum-db.com", randint(1, 6))
 # u12 = User(fake.last_name(), fake.last_name(), fake.msisdn(), fake.first_name() + "@fum-db.com", randint(1, 6))
@@ -132,3 +132,11 @@ db.commit()
 # Drug("e", "a fdfd sdlfkj asdlkfj asdf", 3500, '2010-01-13 13:55').save(db)
 # Drug("f", "asdl fdfdf kj asdlkfj asdf", 3500, '2010-06-12 13:55').save(db)
 # Drug("g", "aadf sdlfkj asdlkfj asdf", 35900, '2010-06-11 13:55').save(db)
+
+# Test("a", "asdlfkj asdlkfj asdf", 353500).save(db)
+# Test("b", "asdlfkj ag sdlkfj asdf", 3421500).save(db)
+# Test("c", "asdlfkj asd sd lkfj asdf", 35300).save(db)
+# Test("d", "aa asdlfkj asdlkfj asdf", 3450).save(db)
+# Test("e", "a fdfd sdlfkj asdlkfj asdf", 3500).save(db)
+# Test("f", "asdl fdfdf kj asdlkfj asdf", 3500).save(db)
+# Test("g", "aadf sdlfkj asdlkfj asdf", 35900).save(db)

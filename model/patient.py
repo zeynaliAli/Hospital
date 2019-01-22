@@ -50,8 +50,10 @@ class Patient(User):
         self.show_menu(db)
 
     def show_menu(self, db):
-        print("1 - to see the timetable :")
-        print("2 - request a visit date (choose id of visit date from timetable) : ")
+        print("1 - To see the timetable :")
+        print("2 - Request a visit date (choose id of visit date from timetable) : ")
+        print("3 - See prescription :")
+        print("4 - See tests :")
         choice = int(input())
         if choice == 1:
             self.show_free_visit_times(db)

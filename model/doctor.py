@@ -270,6 +270,71 @@ class Doctor(User):
         cursor.close()
         db.commit()
 
+    def give_test(self, db):
+        print("Your Patients (remember id to give test) :")
+        sql = """
+               SELECT u.user_id, u.username, u.mail, t.visit_date
+               FROM user u
+               INNER JOIN timetable t ON u.user_id = t.patient_id
+               WHERE t.doctor_id = %s AND t.accepted = true
+               """
+
+        cursor = db.cursor()
+        cursor.execute(sql, (self.id,))
+        rows = cursor.fetchall()
+        for row in rows:
+            time = row[3]
+            print("""
+            Time: {}
+            Patient: id = {}, username = {}, email = {}
+            Accept Status: {}
+            _________________________________________
+            """.format(time, row[0], row[1], row[2], True))
+
+        if len(rows) < 1:
+            print("You have no patient loser crap!")
+            self.show_menu(db)
+            return
+
+        patient_id = int(input("Enter Patient id you want to give test: \n"))
+        description = input("Enter description about test: \n")
+
+        prescription_sql = """
+        INSERT INTO diagnosis
+        (doctor_id, patient_id, description)
+        VALUES
+        (%s, %s, %s)
+        """
+        cursor.execute(prescription_sql, (self.id, patient_id, description))
+        diagnosis_id = cursor.lastrowid
+
+        tests_sql = """
+        SELECT test_id, name
+        FROM test
+        """
+        cursor.execute(tests_sql)
+        rows = cursor.fetchall()
+        for row in rows:
+            print("""
+            Test ID : {}
+            Test Name : {}
+            ___________________
+            
+            """.format(row[0], row[1]))
+
+        tests = input("Enter ID of drugs you want to test to patient (example : 1-2-3-4-5) : \n")
+        tests = tests.split("-")
+        diagnosis_test_sql = """
+        INSERT INTO diagnosis_test
+        (diagnosis_id, test_id)
+        VALUES
+        (%s, %s)
+        """
+        for test in tests:
+            cursor.execute(diagnosis_test_sql, (diagnosis_id, test,))
+        cursor.close()
+        db.commit()
+
     def show_menu(self, db):
         super().show_menu(db)
         print("1 - Show schedule")
@@ -278,6 +343,7 @@ class Doctor(User):
         print("4 - Accept an appointment")
         print("5 - Add free time to visit")
         print("6 - Give prescription")
+        print("7 - Give test")
         choice = int(input())
         if choice == 1:
             self.show_schedule(db)
